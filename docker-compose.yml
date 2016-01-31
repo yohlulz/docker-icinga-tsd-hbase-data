@@ -1,0 +1,70 @@
+hbase:
+ image: utcn/hbase
+ container_name: prod_hbase
+ hostname: hbase_readonly
+ ports:
+ - "2181:2181"
+ - "16000-16100:16000-16100"
+ - "8080:8080"
+ volumes:
+ - ./hbase/hbase:/opt/hbase-data
+ - ./hbase/conf:/opt/hbase/conf
+
+tsdb_rw:
+ image: utcn/tsdb
+ container_name: prod_tsdb_rw
+ hostname: tsdb_rw
+ ports:
+ - "4242:4242"
+ volumes:
+ - ./tsdb/rw/cache:/opt/data/cache
+ - ./tsdb/rw/tsdb:/opt/data/tsdb
+ links:
+ - hbase
+
+tsdb_ro_1:
+ image: utcn/tsdb
+ container_name: prod_tsdb_ro_1
+ hostname: tsdb_ro_1
+ ports:
+ - "4343:4242"
+ volumes:
+ - ./tsdb/ro-1/cache:/opt/data/cache
+ - ./tsdb/ro-1/tsdb:/opt/data/tsdb
+ links:
+ - hbase
+
+tsdb_ro_2:
+ image: utcn/tsdb
+ container_name: prod_tsdb_ro_2
+ hostname: tsdb_ro_2
+ ports:
+ - "4545:4242"
+ volumes:
+ - ./tsdb/ro-2/cache:/opt/data/cache
+ - ./tsdb/ro-2/tsdb:/opt/data/tsdb
+ links:
+ - hbase
+
+icinga2:
+ image: utcn/icinga2
+ container_name: docker_icinga2
+ hostname: icinga2-master
+ ports:
+ - "80:80"
+ - "443:443"
+ - "5665:5665"
+ - "3306:3306"
+ volumes:
+ - ./icinga2/etc/icinga2:/etc/icinga2
+ links:
+ - hbase
+ - tsdb_rw
+ - tsdb_ro_1
+ - tsdb_ro_2
+ environment:
+ - ICINGA_PASSWORD=icinga
+ - ICINGA_WEB_PASSWORD=icinga
+ - ICINGAWEB2_PASSWORD=icinga
+ - IDO_PASSWORD=icinga
+
