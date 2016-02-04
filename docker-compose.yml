@@ -9,6 +9,7 @@ hbase:
  volumes:
  - ./hbase/hbase:/opt/hbase-data
  - ./hbase/conf:/opt/hbase/conf
+ - ./ssh/keys:/etc/ssh/keys
 
 tsdb_rw:
  image: utcn/tsdb
@@ -19,6 +20,7 @@ tsdb_rw:
  volumes:
  - ./tsdb/rw/cache:/opt/data/cache
  - ./tsdb/rw/tsdb:/opt/data/tsdb
+ - ./ssh/keys:/etc/ssh/keys
  links:
  - hbase
 
@@ -31,6 +33,7 @@ tsdb_ro_1:
  volumes:
  - ./tsdb/ro-1/cache:/opt/data/cache
  - ./tsdb/ro-1/tsdb:/opt/data/tsdb
+ - ./ssh/keys:/etc/ssh/keys
  links:
  - hbase
 
@@ -43,6 +46,7 @@ tsdb_ro_2:
  volumes:
  - ./tsdb/ro-2/cache:/opt/data/cache
  - ./tsdb/ro-2/tsdb:/opt/data/tsdb
+ - ./ssh/keys:/etc/ssh/keys
  links:
  - hbase
 
