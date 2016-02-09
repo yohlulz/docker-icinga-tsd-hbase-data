@@ -28,8 +28,6 @@ tsdb_ro_1:
  image: utcn/tsdb
  container_name: prod_tsdb_ro_1
  hostname: tsdb_ro_1
- ports:
- - "4343:4242"
  volumes:
  - ./tsdb/ro-1/cache:/opt/data/cache
  - ./tsdb/ro-1/tsdb:/opt/data/tsdb
@@ -41,11 +39,20 @@ tsdb_ro_2:
  image: utcn/tsdb
  container_name: prod_tsdb_ro_2
  hostname: tsdb_ro_2
- ports:
- - "4545:4242"
  volumes:
  - ./tsdb/ro-2/cache:/opt/data/cache
  - ./tsdb/ro-2/tsdb:/opt/data/tsdb
+ - ./ssh/keys:/etc/ssh/keys
+ links:
+ - hbase
+
+tsdb_ro_3:
+ image: utcn/tsdb
+ container_name: prod_tsdb_ro_3
+ hostname: tsdb_ro_3
+ volumes:
+ - ./tsdb/ro-3/cache:/opt/data/cache
+ - ./tsdb/ro-3/tsdb:/opt/data/tsdb
  - ./ssh/keys:/etc/ssh/keys
  links:
  - hbase
@@ -66,9 +73,24 @@ icinga2:
  - tsdb_rw
  - tsdb_ro_1
  - tsdb_ro_2
+ - tsdb_ro_3
  environment:
  - ICINGA_PASSWORD=icinga
  - ICINGA_WEB_PASSWORD=icinga
  - ICINGAWEB2_PASSWORD=icinga
  - IDO_PASSWORD=icinga
 
+varnish:
+ image: eeacms/varnish:3
+ container_name: varnish
+ hostname: varnish
+ ports:
+ - "4343:80"
+ volumes:
+ - ./varnish:/etc/varnish/conf.d
+ links:
+ - tsdb_ro_1:tsd_tsdb_ro_1
+ - tsdb_ro_2:tsd_tsdb_ro_2
+ - tsdb_ro_3:tsd_tsdb_ro_3
+ environment:
+ - CACHE_SIZE=1024m
