@@ -20,7 +20,7 @@ CRITICAL)
         SOFT)
                         
                 case "${ATTEMPT}" in                
-                6)
+                3)
                         echo -n "Restarting service (3rd soft critical state)..."
 			ssh root@${HOST} supervisorctl -c /etc/supervisord.conf restart opentsdb
                         ;;

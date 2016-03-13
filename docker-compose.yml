@@ -74,6 +74,8 @@ icinga2:
  - tsdb_ro_1
  - tsdb_ro_2
  - tsdb_ro_3
+ - tcollector_1
+ - tcollector_2
  environment:
  - ICINGA_PASSWORD=icinga
  - ICINGA_WEB_PASSWORD=icinga
@@ -94,3 +96,23 @@ varnish:
  - tsdb_ro_3:tsd_tsdb_ro_3
  environment:
  - CACHE_SIZE=1024m
+
+tcollector_1:
+ image: utcn/tcollector
+ container_name: prod_tcollector_1
+ hostname: tcollector_1
+ volumes:
+ - ./tcollector/data/dump_1:/opt/data/dump
+ - ./ssh/keys:/etc/ssh/keys
+ links:
+ - tsdb_rw:tsdb
+
+tcollector_2:
+ image: utcn/tcollector
+ container_name: prod_tcollector_2
+ hostname: tcollector_2
+ volumes:
+ - ./tcollector/data/dump_2:/opt/data/dump
+ - ./ssh/keys:/etc/ssh/keys
+ links:
+ - tsdb_rw:tsdb
