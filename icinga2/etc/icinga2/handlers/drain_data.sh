@@ -15,7 +15,9 @@ function import_data {
 	scp root@${HOST}:/opt/data/dump/127\.0\.0\.1 /tmp/${HOST}
 	scp /tmp/${HOST} root@${TSD_HOST}:/tmp/
 	ssh root@${TSD_HOST} /opt/opentsdb/build/tsdb import --config /opt/data/tsdb/opentsdb.conf /tmp/${HOST}
-	
+}
+
+function clean() {
 	# clean
 	rm /tmp/${HOST}
 	ssh root@${HOST} rm /opt/data/dump/127\.0\.0\.1
@@ -27,8 +29,9 @@ OK)
 	case "${LAST_STATE}" in
 	CRITICAL)
 		echo -n "Stopping drain service ..."
-                ssh root@${HOST} supervisorctl -c /etc/supervisord.conf stop tsd_drain
 		import_data
+		ssh root@${HOST} supervisorctl -c /etc/supervisord.conf stop tsd_drain
+		clean
 		;;
 	esac
         ;;

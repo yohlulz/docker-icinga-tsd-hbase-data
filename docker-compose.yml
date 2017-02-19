@@ -12,7 +12,7 @@ hbase:
  - ./ssh/keys:/etc/ssh/keys
 
 tsdb_rw:
- image: utcn/tsdb
+ image: utcn/tsdb:2.2.0
  container_name: prod_tsdb_rw
  hostname: tsdb_rw
  ports:
@@ -24,8 +24,22 @@ tsdb_rw:
  links:
  - hbase
 
+grafana:
+ image: grafana/grafana
+ container_name: grafana
+ hostname: grafana_rw
+ ports:
+ - "3000:3000"
+ volumes:
+ - ./grafana:/var/lib/grafana
+ links:
+ - tsdb_rw
+ - tsdb_ro_1
+ - tsdb_ro_2
+ - tsdb_ro_3
+
 tsdb_ro_1:
- image: utcn/tsdb
+ image: utcn/tsdb:2.2.0
  container_name: prod_tsdb_ro_1
  hostname: tsdb_ro_1
  volumes:
@@ -36,7 +50,7 @@ tsdb_ro_1:
  - hbase
 
 tsdb_ro_2:
- image: utcn/tsdb
+ image: utcn/tsdb:2.2.0
  container_name: prod_tsdb_ro_2
  hostname: tsdb_ro_2
  volumes:
@@ -47,7 +61,7 @@ tsdb_ro_2:
  - hbase
 
 tsdb_ro_3:
- image: utcn/tsdb
+ image: utcn/tsdb:2.2.0
  container_name: prod_tsdb_ro_3
  hostname: tsdb_ro_3
  volumes:
